@@ -74,7 +74,7 @@ VERSION 1 *********************************
 
             The program compiled and yielded no errors. It performed as specified when ran, testing for special cases of text including "hello" and text limited to "quit", echoing all othe rinput to the console.
 
-        Script for deterministic testing:
+        Test Script Generation:
 
             Prompt (from assignment): 
                 "I have a compiled C program named harness. Write a very simple Bash script (for
@@ -95,13 +95,13 @@ VERSION 1 *********************************
 
 REVISION 1*********************************
 
-    While the program works for expected inputs and outputs, it is missing features required in the assignment
-    Specifically implementation requirements 2, 3, and memory leak testing in 5 (see "Implementation Requirements" above)
+    While the program works for expected inputs and outputs, it is missing features required in the assignment, specifically implementation requirements 2, 3, and memory leak testing in 5 (see "Implementation Requirements" above).
  
 
     PROMPT 2*********************************
 
         (adapted from assignment)
+       
         "While the harness program produces the expected outputs for the given inputs, I need it to implement more features: 
             1. Core Loop: Implement a terminal-based loop that captures user input, passes it to
             a mock model function (which mimics an LLM), and outputs the simulated
@@ -116,27 +116,13 @@ REVISION 1*********************************
 
 
     OUTPUT 2 (saved as tag v2.0)*********************************
-        Output is saved in the main branch of repository under harness.c
-        Test script saved under main branch of repository as test.sh
-        
-    OUTPUT 2 TESTING*********************************
-        The program only included standard header files <stdio.h>, <stdlib.h>, and <string.h> as specified in specs
-            
-        The program implemented an infinite while() loop requesting user input via fgets(), line-by-line comments explaining functionality, and cases for special input as defined in specs
+        The output is saved in the main branch of repository under harness.c (most recent version, the program was too long to directly paste into this file and it has not been altered)
 
-        The program utilizes a function called MockModel() that stands in for a real LLM call
-
-        The program utilizes functions for context management and tool execution.
-
-        The program compiled and yielded no errors. It performed as specified when ran, testing for special cases of text including "hello" and text limited to "quit", echoing all othe rinput to the console.
-
-        The LLM generated a robust test program (saved as test.sh) that utilizes terminal commands to test multiple input cases for expected output, as well as checking that each test is passed and generating an output message for tests passed and failed. 
-
-        Test.sh was ran in the terminal - but did not immediately pass all tests (see more below)
+        The test script is saved under main branch of repository as test.sh (revised below)
 
     Explaination from Claude:*********************************
 
-        What each piece does:
+        "What each piece does:
 
         harness.c
 
@@ -160,7 +146,26 @@ REVISION 1*********************************
         bash
         sudo apt install valgrind"
 
-    TEST SCRIPT: *********************************
+
+     OUTPUT 2 TESTING*********************************
+        The program only included standard header files <stdio.h>, <stdlib.h>, and <string.h> as specified in specs
+            
+        The program implemented an infinite while() loop requesting user input via fgets(), line-by-line comments explaining functionality, and cases for special input as defined in specs
+
+        The program utilizes a function called MockModel() that stands in for a real LLM call
+
+        The program utilizes functions for context management and tool execution.
+
+        The program compiled and yielded no errors. It performed as specified when ran, testing for special cases of text including "hello" and text limited to "quit", echoing all othe rinput to the console.
+
+        The LLM generated a robust test program (saved as test.sh) that utilizes terminal commands to test multiple input cases for expected output, as well as checking that each test is passed and generating an output message for tests passed and failed. 
+
+        Test.sh was ran in the terminal - but did not immediately pass all tests (see more below)
+
+    TEST SCRIPT REVISION: *********************************
+   
+    Test Script (test.sh):
+       
         #!/bin/bash
         # test_harness.sh
         # Runs the compiled 'harness' program through a fixed sequence of inputs,
@@ -269,9 +274,9 @@ REVISION 1*********************************
             exit 1
         fi
 
-TEST SCRIPT REVISION: *********************************
+TEST SCRIPT REVISION CONTINUED: *********************************
    
-    'sudo apt install valgrind' was ran per reccomendation by Claude to run the memory leak debugging segment of test.sh
+    'sudo apt install valgrind' was ran in terminal per reccomendation by Claude to run the memory leak debugging segment of test.sh
 
     When 'bash test.sh' was ran in terminal, it yielded the results: 
 
@@ -285,7 +290,7 @@ TEST SCRIPT REVISION: *********************************
 
     Claude Output: 
 
-        our file has \r\n (Windows-style) line endings instead of \n (Unix-style), which happens when a file is created or edited in a Windows text editor (like Notepad) before being used in WSL/bash. Bash reads that trailing \r character as part of the command itself, which is why you're getting $'\r': command not found and eventually a syntax error once it throws things off enough to break control structures like if/fi.
+        "Your file has \r\n (Windows-style) line endings instead of \n (Unix-style), which happens when a file is created or edited in a Windows text editor (like Notepad) before being used in WSL/bash. Bash reads that trailing \r character as part of the command itself, which is why you're getting $'\r': command not found and eventually a syntax error once it throws things off enough to break control structures like if/fi.
 
         Fix it with this one command:
 
@@ -301,7 +306,7 @@ TEST SCRIPT REVISION: *********************************
 
         Why this happened: you likely pasted the script content into a Windows-based editor (Notepad, or even VS Code if it wasn't explicitly set to use Unix line endings) rather than creating/pasting it directly within a WSL-connected terminal or a WSL-aware editor.
 
-        To prevent this going forward: if you're using VS Code, check the bottom-right status bar when a file is open — it shows either CRLF (Windows) or LF (Unix). You can click on it and switch to LF for any script files you intend to run in WSL/bash.
+        To prevent this going forward: if you're using VS Code, check the bottom-right status bar when a file is open — it shows either CRLF (Windows) or LF (Unix). You can click on it and switch to LF for any script files you intend to run in WSL/bash."
 
     The reccomendations were followed and 'bash test.sh' was ran again in the terminal, yielding the following output: 
 
@@ -325,12 +330,12 @@ TEST SCRIPT REVISION: *********************************
 
     Claude Output: 
 
-        Good progress — functional tests all pass, and now valgrind is actually running and catching something. Let's see what it found:
+        "Good progress — functional tests all pass, and now valgrind is actually running and catching something. Let's see what it found:
 
         bash
         cat /tmp/harness_valgrind.log
 
-        Paste the output here (or at least the "LEAK SUMMARY" section and anything above it mentioning harness.c line numbers) and I'll help pin down the exact cause. A common one to watch for with this specific program: strdup allocates memory that must be freed — if there's any code path where a turn gets overwritten or the program exits without every stored turn being freed, valgrind will flag it as "definitely lost."
+        Paste the output here (or at least the "LEAK SUMMARY" section and anything above it mentioning harness.c line numbers) and I'll help pin down the exact cause. A common one to watch for with this specific program: strdup allocates memory that must be freed — if there's any code path where a turn gets overwritten or the program exits without every stored turn being freed, valgrind will flag it as "definitely lost.""
 
     The command 'cat /tmp/harness_valgrind.log' was ran in terminal per reccomendation, yielding the following output: 
 
@@ -359,7 +364,7 @@ TEST SCRIPT REVISION: *********************************
 
     Claude Output: 
 
-        Good news: your program is actually fine. Look closely at valgrind's own output:
+        "Good news: your program is actually fine. Look closely at valgrind's own output:
 
         in use at exit: 0 bytes in 0 blocks
         All heap blocks were freed -- no leaks are possible
@@ -375,7 +380,7 @@ TEST SCRIPT REVISION: *********************************
 
         Ran a command, read a file
 
-        Grab the updated test.sh, apply the same line-ending fix if needed (sed -i 's/\r$//' test.sh), and rerun. It should now show PASS: no memory leaks or memory errors detected and ALL CHECKS PASSED.
+        Grab the updated test.sh, apply the same line-ending fix if needed (sed -i 's/\r$//' test.sh), and rerun. It should now show PASS: no memory leaks or memory errors detected and ALL CHECKS PASSED."
 
     The new file 'test.sh' was downloaded, edited using the command 'sed -i 's/\r$//' test.sh', and ran in terminal, producing the following output: 
 
@@ -397,13 +402,9 @@ TEST SCRIPT REVISION: *********************************
 
         === ALL CHECKS PASSED ===
 
-The final program (harness.c) and test script (test.sh) were saved under tag v2.1
+FINAL::*********************************
+harness.c compiles and runs to spec
 
-                
-            
+test.sh runs, tests all inputs, and outputs 0 error codes, indicating proper functionality and no memory leaks in harness
 
-                
-
-
-
-            
+The final program (harness.c) and test script (test.sh) were saved in the main branch of the repository. 
