@@ -73,9 +73,20 @@ if command -v valgrind >/dev/null 2>&1; then
         "$BINARY" > "$VALGRIND_LOG" 2>&1
     VALGRIND_EXIT=$?
 
-    if grep -q "definitely lost: 0 bytes" "$VALGRIND_LOG" && \
-       grep -q "indirectly lost: 0 bytes" "$VALGRIND_LOG" && \
-       [ "$VALGRIND_EXIT" -eq 0 ]; then
+    # Valgrind reports a clean run in one of two ways:
+    #   1. A full "LEAK SUMMARY" with explicit "definitely/indirectly lost: 0 bytes" lines, or
+    #   2. A short "All heap blocks were freed -- no leaks are possible" line when there's
+    #      nothing left allocated at all. Accept either form as a pass.
+    if grep -q "All heap blocks were freed -- no leaks are possible" "$VALGRIND_LOG"; then
+        LEAKS_OK=1
+    elif grep -q "definitely lost: 0 bytes" "$VALGRIND_LOG" && \
+         grep -q "indirectly lost: 0 bytes" "$VALGRIND_LOG"; then
+        LEAKS_OK=1
+    else
+        LEAKS_OK=0
+    fi
+
+    if [ "$LEAKS_OK" -eq 1 ] && [ "$VALGRIND_EXIT" -eq 0 ]; then
         echo "PASS: no memory leaks or memory errors detected"
     else
         echo "FAIL: potential memory leak or error detected — see $VALGRIND_LOG"
