@@ -116,3 +116,47 @@ OUTPUT 1 TESTING:***************************************************************
 
         Testing Bash Script: 
             command 'bash test.sh' was ran in terminal. Output "Hello there, how may I assist you?" as expected.
+
+
+REVISION 1****************************************************************************************************
+
+    While the program works for expected inputs and outputs, it is missing features required in the assignment
+    Specifically implementation requirements 2, 3, and memory leak testing in 5: 
+
+        Implementation Requirements
+        Your harness must be written in standard C and compile successfully in a POSIX
+        environment.
+        1. Core Loop: Implement a terminal-based loop that captures user input, passes it to
+        a mock model function (which mimics an LLM), and outputs the simulated
+        response. Note that the purpose of the mock model is that you don’t need call the
+        LLM APIs.
+        2. Context Management: Allocate and manage memory safely to store a minimal
+        conversation history (e.g., the last 5 turns)
+        3. Tool execution: calls a tool to execute functions such as mathematical calculation
+        that an LLM is not designed for.
+        4. Vibe Coding Log: Document the architectural rules and prompts you used to
+        generate the C code, demonstrating your application of SDD principles.
+        5. AI-Generated Testing: Instruct your AI assistant to write a separate testing script
+        that validates your harness's state management and checks for basic memory
+        leaks. 
+
+    PROMPT 2***************************************************************************************************
+
+        (adapted from assignment)
+        "While the harness program produces the expected outputs for the given inputs, I need it to implement more features: 
+            1. Core Loop: Implement a terminal-based loop that captures user input, passes it to
+            a mock model function (which mimics an LLM), and outputs the simulated
+            response. Note that the purpose of the mock model is that you don’t need call the
+            LLM APIs.
+            2. Context Management: Allocate and manage memory safely to store a minimal
+            conversation history (e.g., the last 5 turns)
+            3. Tool execution: calls a tool to execute functions such as mathematical calculation
+            that an LLM is not designed for.
+        
+        In addition to this, I need the testing program to not only run the program but
+        to validate the harness's state management and check for basic memory
+        leaks."
+
+
+
+    
